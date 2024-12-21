@@ -1,0 +1,120 @@
+from typing import List, Tuple
+import numpy as np
+from ttp_solver import TTPSolver
+
+class TTPRLFitness:
+    def __init__(self, ttp_solver: 'TTPSolver'):
+        self.ttp_solver = ttp_solver
+        # Learning parameters
+        self.alpha = 0.1  # Learning rate
+        self.gamma = 0.9  # Discount factor
+        self.epsilon = 0.1  # Exploration rate
+        # State-value dictionary for storing learned values
+        self.state_values = {}
+        
+    def get_state_key(self, current_city: int, current_weight: float, remaining_capacity: float) -> str:
+        """Create a discrete state representation for RL"""
+        weight_bucket = int(current_weight / (self.ttp_solver.capacity * 0.1))
+        remaining_bucket = int(remaining_capacity / (self.ttp_solver.capacity * 0.1))
+        return f"{current_city}_{weight_bucket}_{remaining_bucket}"
+        
+    def calculate_reward(self, 
+                        value_gained: float, 
+                        time_spent: float, 
+                        weight_added: float) -> float:
+        """Calculate immediate reward for the current action"""
+        profit = value_gained
+        rent_cost = self.ttp_solver.renting_ratio * time_spent
+        weight_penalty = 0.1 * weight_added  # Penalty for carrying more weight
+        return profit - rent_cost - weight_penalty
+
+    def calculate_fitness(self, solution: Tuple[List[int], List[int]]) -> float:
+        route, picking_plan = solution
+        total_value = 0
+        current_weight = 0
+        total_time = 0
+        cumulative_reward = 0
+        base_fitness = 1000000
+        
+        # Dynamic velocity factors
+        MAX_VELOCITY = 1.0
+        MIN_VELOCITY = 0.1
+        VELOCITY_DECAY = 0.01
+        
+        for i in range(len(route)):
+            current_city = route[i]
+            next_city = route[(i + 1) % len(route)]
+            
+            # Get current state
+            state_key = self.get_state_key(
+                current_city, 
+                current_weight, 
+                self.ttp_solver.capacity - current_weight
+            )
+            
+            value_gained = 0
+            weight_added = 0
+            
+            # Process items in current city
+            for item_idx in range(len(picking_plan)):
+                if picking_plan[item_idx] == 1:
+                    weight, value = self.ttp_solver.items[item_idx]
+                    if current_weight + weight <= self.ttp_solver.capacity:
+                        current_weight += weight
+                        weight_added += weight
+                        value_gained += value
+                        total_value += value
+            
+            # Calculate velocity with exponential decay
+            velocity_factor = MAX_VELOCITY * np.exp(-VELOCITY_DECAY * current_weight)
+            velocity = max(MIN_VELOCITY, velocity_factor)
+            
+            # Calculate distance and time
+            distance = self.ttp_solver.calculate_distance(
+                self.ttp_solver.cities[current_city], 
+                self.ttp_solver.cities[next_city]
+            )
+            time = distance / velocity
+            total_time += time
+            
+            # Calculate immediate reward
+            reward = self.calculate_reward(value_gained, time, weight_added)
+            cumulative_reward += reward
+            
+            # Update state-value function (TD learning)
+            if state_key not in self.state_values:
+                self.state_values[state_key] = 0
+                
+            next_state_key = self.get_state_key(
+                next_city,
+                current_weight,
+                self.ttp_solver.capacity - current_weight
+            )
+            
+            if next_state_key not in self.state_values:
+                self.state_values[next_state_key] = 0
+                
+            # TD update
+            td_target = reward + self.gamma * self.state_values[next_state_key]
+            td_error = td_target - self.state_values[state_key]
+            self.state_values[state_key] += self.alpha * td_error
+            
+        # Calculate final fitness with learned values
+        rental_cost = self.ttp_solver.renting_ratio * total_time
+        
+        # Weight capacity penalties
+        capacity_penalty = 0
+        if current_weight > self.ttp_solver.capacity:
+            overflow = current_weight - self.ttp_solver.capacity
+            capacity_penalty = overflow * 1000
+            
+        # Combine all components for final fitness
+        fitness = (
+            base_fitness +
+            (total_value * 10) -  # Scaled profit
+            (rental_cost * 5) +   # Rental cost
+            cumulative_reward -   # RL rewards
+            capacity_penalty      # Capacity penalties
+        )
+        
+        return max(100, fitness)  # Ensure meaningful minimum value
