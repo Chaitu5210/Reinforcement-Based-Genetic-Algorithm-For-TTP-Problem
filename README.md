@@ -75,7 +75,7 @@ City 2: X=30, Y=50, Profit=25, Weight=10
 To execute the code, use the following command:
 
 ```bash
-python3 main.py --files a29.txt --population 200 --mutation 0.01 --generations 200
+python3 main.py --files DATASET/eil51_n50_bounded-strongly-corr_01.ttp --population 200 --mutation 0.01 --generations 200
 ```
 
 ### Command-Line Arguments
@@ -90,7 +90,7 @@ python3 main.py --files a29.txt --population 200 --mutation 0.01 --generations 2
 ## Example Execution
 
 ```bash
-python3 main.py --files a29.txt --population 200 --mutation 0.01 --generations 200
+python3 main.py --files DATASET/eil51_n50_bounded-strongly-corr_01.ttp --population 200 --mutation 0.01 --generations 200
 ```
 
 The above command runs the algorithm on the benchmark file `a29.txt` with:
