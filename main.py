@@ -59,9 +59,6 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         
     return best_fitness_history, best_overall_fitness, best_solution
 
-
-
-
 def main():
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
     parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
