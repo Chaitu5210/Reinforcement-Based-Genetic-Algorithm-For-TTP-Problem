@@ -64,16 +64,17 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
 
 def main():
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
-    parser.add_argument('--files', nargs='+', required=True, help='Input benchmark files')
+    parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
     parser.add_argument('--population', type=int, default=200, help='Population size')
     parser.add_argument('--mutation', type=float, default=0.05, help='Mutation rate')
-    parser.add_argument('--generations', type=int, default=2, help='Number of generations')
+    parser.add_argument('--generations', type=int, default=2000, help='Number of generations')
+    parser.add_argument('--itrations', type=int, default=1, help='Number of itrations')
     
     args = parser.parse_args()
     
     final_results = []
 
-    for run in range(10):  
+    for run in range(args.itrations):  
         run_results = []
 
         for idx, file in enumerate(args.files):
