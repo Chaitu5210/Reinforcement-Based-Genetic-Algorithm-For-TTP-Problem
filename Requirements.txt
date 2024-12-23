@@ -1,11 +1,3 @@
 numpy
-pandas
-scipy
+argparse
 matplotlib
-seaborn
-scikit-learn
-tensorflow
-keras
-torch
-gym
-deap

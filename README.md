@@ -114,6 +114,12 @@ City 2: X=30, Y=50, Profit=25, Weight=10
 
 ## How to Run the Code
 
+Install the requirements using the following command:
+
+```bash
+pip install -r requirements.txt
+```
+
 To execute the code, use the following command:
 
 ```bash
