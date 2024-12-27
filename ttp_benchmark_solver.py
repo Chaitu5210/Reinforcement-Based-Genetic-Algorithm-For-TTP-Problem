@@ -17,6 +17,8 @@ def read_benchmark_file(filename: str):
             line = line.strip()
             if 'DIMENSION' in line:
                 dimension = int(line.split(':')[1].strip())
+            elif 'NUMBER OF ITEMS' in line:
+                items = int(line.split(':')[1].strip())
             elif 'CAPACITY OF KNAPSACK' in line:
                 capacity = int(line.split(':')[1].strip())
             elif 'MIN SPEED' in line:
@@ -33,6 +35,7 @@ def read_benchmark_file(filename: str):
     
     return {
         'dimension': dimension,
+        'items': items,
         'capacity': capacity,
         'min_speed': min_speed,
         'max_speed': max_speed,
@@ -42,16 +45,27 @@ def read_benchmark_file(filename: str):
 
 
 
-def generate_items(num_cities: int, num_items: int) -> List[Tuple[float, float]]:
-    """Generate items for the TTP problem"""
+def generate_items(filename: str) -> List[Tuple[int, float, float, int]]:
     items = []
-    items_per_city = num_items // num_cities
-    
-    for _ in range(num_items):
-        weight = random.uniform(1, 100)
-        value = random.uniform(10, 1000)
-        items.append((weight, value))
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+
+    in_items_section = False
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith('ITEMS SECTION'):
+            in_items_section = True
+            continue  # Skip the 'ITEMS SECTION' line itself
+
+        if in_items_section:
+            if not line:  # Exit if the section ends (empty line)
+                break
+            
+            parts = line.split()
+            if len(parts) == 3:
+                profit = float(parts[1])
+                weight = float(parts[2])
+                items.append((profit, weight))
     
     return items
-    
-  

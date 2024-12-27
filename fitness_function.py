@@ -53,5 +53,6 @@ def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSol
     
     # Final fitness calculation combining base fitness and profit
     objective = base_fitness + total_profit
+
     
     return max(100, objective)  # Ensure meaningful minimum value

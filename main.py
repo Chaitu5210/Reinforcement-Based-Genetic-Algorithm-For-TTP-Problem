@@ -6,13 +6,12 @@ from fitness_function import calculate_fitness
 from ttp_benchmark_solver import read_benchmark_file, generate_items
 import matplotlib.pyplot as plt 
 
-
 def run_genetic_algorithm(name: str, filename: str, population_size: int, mutation_rate: float, generations: int):
     benchmark_data = read_benchmark_file(filename)
-    num_items = len(benchmark_data.get('items', [])) or 2790
-    
-    items = generate_items(benchmark_data['dimension'], num_items)
-    
+    num_items = benchmark_data.get('items')
+
+    items = generate_items("DATASET/a29.txt")
+
     ttp_solver = TTPSolver(
         cities=benchmark_data['cities'],
         items=items,
@@ -21,14 +20,17 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         max_speed=benchmark_data['max_speed'],
         renting_ratio=benchmark_data['renting_ratio']
     )
-    
+
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
     population = ga.initialize_population(len(benchmark_data['cities']), len(items))
-    
+
     best_fitness_history = []
     best_solution = None
     best_overall_fitness = float('-inf')
-    
+
+    prev_population = None  # To store the population of the previous generation
+    prev_best_fitness = float('-inf')
+
     for generation in range(ga.generations):
         fitness_scores = [calculate_fitness(solution, ttp_solver) for solution in population]
         best_fitness = max(fitness_scores)
@@ -37,12 +39,23 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         if best_fitness > best_overall_fitness:
             best_overall_fitness = best_fitness
             best_solution = population[fitness_scores.index(best_fitness)]
-        
+
         print(f"{name} - Generation {generation}: Best Fitness = {best_fitness}")
-        
+
+        # Check if the current generation's fitness is less than the previous generation's fitness
+        if best_fitness < prev_best_fitness:
+            print(f"{name} - Generation {generation}: Reverting to previous generation's population")
+            population = prev_population  # Revert to the previous generation's population
+            best_fitness_history[-1] = prev_best_fitness  # Update fitness history with the previous best fitness
+            continue  # Skip the rest of the loop to maintain the previous generation's state
+
+        # Store the current population and fitness as the previous state for the next generation
+        prev_population = population[:]
+        prev_best_fitness = best_fitness
+
         # Select parents based on fitness
         parents = ga.select_parents(population, fitness_scores)
-        
+
         new_population = []
         for i in range(0, len(parents), 2):  # Process in pairs
             parent1 = parents[i]
@@ -56,7 +69,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
             new_population.append(random.choice(parents))
 
         population = new_population
-        
+
     return best_fitness_history, best_overall_fitness, best_solution
 
 def main():
@@ -65,10 +78,10 @@ def main():
     parser.add_argument('--population', type=int, default=200, help='Population size')
     parser.add_argument('--mutation', type=float, default=0.05, help='Mutation rate')
     parser.add_argument('--generations', type=int, default=2000, help='Number of generations')
-    parser.add_argument('--itrations', type=int, default=1, help='Number of itrations')
-    
+    parser.add_argument('--itrations', type=int, default=1, help='Number of iterations')
+
     args = parser.parse_args()
-    
+
     final_results = []
 
     for run in range(args.itrations):  
@@ -83,7 +96,7 @@ def main():
                 args.generations
             )
             run_results.append(ga_results)
-        
+
         # Plot comparison for this run
         plt.figure(figsize=(12, 6))
         for idx, result in enumerate(run_results):
