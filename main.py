@@ -28,7 +28,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     best_solution = None
     best_overall_fitness = float('-inf')
 
-    prev_population = None  # To store the population of the previous generation
+    prev_population = None 
     prev_best_fitness = float('-inf')
 
     for generation in range(ga.generations):
@@ -42,14 +42,12 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
 
         print(f"{name} - Generation {generation}: Best Fitness = {best_fitness}")
 
-        # Check if the current generation's fitness is less than the previous generation's fitness
         if best_fitness < prev_best_fitness:
             print(f"{name} - Generation {generation}: Reverting to previous generation's population")
-            population = prev_population  # Revert to the previous generation's population
-            best_fitness_history[-1] = prev_best_fitness  # Update fitness history with the previous best fitness
-            continue  # Skip the rest of the loop to maintain the previous generation's state
+            population = prev_population  
+            best_fitness_history[-1] = prev_best_fitness  
+            continue 
 
-        # Store the current population and fitness as the previous state for the next generation
         prev_population = population[:]
         prev_best_fitness = best_fitness
 
