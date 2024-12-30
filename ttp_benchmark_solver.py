@@ -63,7 +63,7 @@ def generate_items(filename: str) -> List[Tuple[int, float, float, int]]:
                 break
             
             parts = line.split()
-            if len(parts) == 3:
+            if len(parts) == 4:
                 profit = float(parts[1])
                 weight = float(parts[2])
                 items.append((profit, weight))

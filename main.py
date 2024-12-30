@@ -10,7 +10,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     benchmark_data = read_benchmark_file(filename)
     num_items = benchmark_data.get('items')
 
-    items = generate_items("DATASET/a29.txt")
+    items = generate_items(f'{filename}')
 
     ttp_solver = TTPSolver(
         cities=benchmark_data['cities'],
@@ -23,6 +23,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
 
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
     population = ga.initialize_population(len(benchmark_data['cities']), len(items))
+    
 
     best_fitness_history = []
     best_solution = None
