@@ -24,16 +24,24 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
     population = ga.initialize_population(len(benchmark_data['cities']), len(items))
     
-
     best_fitness_history = []
     best_solution = None
     best_overall_fitness = float('-inf')
 
     prev_population = None 
     prev_best_fitness = float('-inf')
+    
+    # Reset all_weights for each iteration
+    all_weights = []
 
     for generation in range(ga.generations):
-        fitness_scores = [calculate_fitness(solution, ttp_solver) for solution in population]
+        scores = [calculate_fitness(solution, ttp_solver) for solution in population]
+        fitness, weight = zip(*scores)
+        # Convert to lists if necessary
+        fitness_scores = list(fitness)
+        weights = list(weight)
+        all_weights.append(max(weights))
+
         best_fitness = max(fitness_scores)
         best_fitness_history.append(best_fitness)
 
@@ -69,7 +77,8 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
 
         population = new_population
 
-    return best_fitness_history, best_overall_fitness, best_solution
+    return best_fitness_history, best_overall_fitness, best_solution, max(all_weights)
+
 
 def main():
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
@@ -83,36 +92,54 @@ def main():
 
     final_results = []
 
-    for run in range(args.itrations):  
-        run_results = []
+    # Open a file to log the results
+    with open("results_log.txt", "w") as log_file:
+        log_file.write("Iteration\tBest Fitness\tMax Weight\n")  # Header
 
-        for idx, file in enumerate(args.files):
-            ga_results = run_genetic_algorithm(  
-                f"GA-{idx+1}",
-                file,
-                args.population,
-                args.mutation,
-                args.generations
-            )
-            run_results.append(ga_results)
+        for run in range(args.itrations):  
+            run_results = []
+            main_weights = []  # Reset main_weights for each iteration
 
-        # Plot comparison for this run
-        plt.figure(figsize=(12, 6))
-        for idx, result in enumerate(run_results):
-            plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
-            print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
+            for idx, file in enumerate(args.files):
+                ga_results = run_genetic_algorithm(  
+                    f"GA-{idx+1}",
+                    file,
+                    args.population,
+                    args.mutation,
+                    args.generations
+                )
+                run_results.append(ga_results)
+                main_weights.append(run_results[0][3])  # Collect the max weight for this run
 
-        plt.xlabel('Generation')
-        plt.ylabel('Best Fitness')
-        plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-        plt.legend()
-        plt.grid(True)
-        plt.savefig(f'ga_comparison_run_{run+1}.png')
-        plt.show()
+            best_fitness = max([result[1] for result in run_results])  # Best fitness in this iteration
+            max_weight = max(main_weights)  # Max weight in this iteration
+            main_weights = []
 
-        final_results.append(result[1])
+            # Log the best fitness and max weight to the file
+            log_file.write(f"{run + 1}\t{best_fitness}\t{max_weight}\n")
+            log_file.flush()  # Ensure the data is written to the file immediately
 
-    print("\n Final Results are :", final_results)
+            print(f'Final weight for iteration {run + 1} is {max_weight}')
+
+            # # Plot comparison for this run
+            # plt.figure(figsize=(12, 6))
+            # for idx, result in enumerate(run_results):
+            #     plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+            #     print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
+
+            # plt.xlabel('Generation')
+            # plt.ylabel('Best Fitness')
+            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            # plt.legend()
+            # plt.grid(True)
+            # plt.savefig(f'ga_comparison_run_{run+1}.png')
+            # plt.show()
+
+            final_results.append(best_fitness)
+            print("-------------------------------------------------------------")
+
+
+        print("\nFinal Results are:", final_results)
 
 if __name__ == "__main__":
     main()
