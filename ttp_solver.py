@@ -13,8 +13,10 @@ class TTPSolver:
         self.renting_ratio = renting_ratio
         self.num_cities = len(cities)
         self.num_items = len(items)
+        # print("cities", cities)
         
     def calculate_distance(self, city1: Tuple[int, int], city2: Tuple[int, int]) -> float:
+        # print(f"Calculating distance between {city1} and {city2}")
         return np.ceil(np.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2))
     
     def calculate_total_distance(self, route: List[int]) -> float:

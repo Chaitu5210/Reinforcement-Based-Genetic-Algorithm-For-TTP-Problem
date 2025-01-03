@@ -136,7 +136,6 @@ def main():
             # plt.show()
 
             final_results.append(best_fitness)
-            print("-------------------------------------------------------------")
 
 
         print("\nFinal Results are:", final_results)

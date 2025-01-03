@@ -12,7 +12,7 @@ class GeneticAlgorithm:
         population = []
         for _ in range(self.population_size):
             route = list(range(num_cities))
-            random.shuffle(route)
+            # random.shuffle(route)
             picking_plan = [random.randint(0, 1) for _ in range(num_items)]
             population.append((route, picking_plan))
         return population
