@@ -13,7 +13,6 @@ class TTPSolver:
         self.renting_ratio = renting_ratio
         self.num_cities = len(cities)
         self.num_items = len(items)
-        # print("cities", cities)
         
     def calculate_distance(self, city1: Tuple[int, int], city2: Tuple[int, int]) -> float:
         # print(f"Calculating distance between {city1} and {city2}")

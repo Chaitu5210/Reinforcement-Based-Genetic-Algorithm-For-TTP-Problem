@@ -1,6 +1,8 @@
 import random
 import numpy as np
 from typing import List, Tuple
+from route_generator import generate_route, calculate_total_distance
+
 
 class GeneticAlgorithm:
     def __init__(self, population_size: int, mutation_rate: float, generations: int):
@@ -8,14 +10,17 @@ class GeneticAlgorithm:
         self.mutation_rate = mutation_rate
         self.generations = generations
 
-    def initialize_population(self, num_cities: int, num_items: int) -> List[Tuple[List[int], List[int]]]:
+    def initialize_population(self, num_cities, num_items: int) -> List[Tuple[List[int], List[int]]]:
         population = []
         for _ in range(self.population_size):
-            route = list(range(num_cities))
+            route = generate_route(num_cities)
+            # print(route)
+            distance = calculate_total_distance(route,num_cities)
+            # print(distance)
             # random.shuffle(route)
             picking_plan = [random.randint(0, 1) for _ in range(num_items)]
             population.append((route, picking_plan))
-        return population
+        return population, distance
 
     def select_parents(self, population, fitness_scores):
         """Select parents using a tournament selection."""

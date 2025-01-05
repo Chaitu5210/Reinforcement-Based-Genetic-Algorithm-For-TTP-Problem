@@ -21,8 +21,9 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         renting_ratio=benchmark_data['renting_ratio']
     )
 
+
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
-    population = ga.initialize_population(len(benchmark_data['cities']), len(items))
+    population, distance = ga.initialize_population(benchmark_data['cities'], len(items))
     
     best_fitness_history = []
     best_solution = None
@@ -35,7 +36,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     all_weights = []
 
     for generation in range(ga.generations):
-        scores = [calculate_fitness(solution, ttp_solver) for solution in population]
+        scores = [calculate_fitness(solution, ttp_solver, distance) for solution in population]
         fitness, weight = zip(*scores)
         # Convert to lists if necessary
         fitness_scores = list(fitness)

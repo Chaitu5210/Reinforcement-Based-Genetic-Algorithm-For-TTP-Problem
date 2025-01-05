@@ -1,81 +1,45 @@
 from typing import List, Tuple
 from ttp_solver import TTPSolver
 
-def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSolver') -> float:
+def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSolver', distance: float) -> float:
     route, picking_plan = solution
-    # print(f"Route: {route}, Picking Plan: {picking_plan}")
-    
-    
+    print(f'route: {route}')
+
     total_value = 0
     current_weight = 0
-    total_time = 0
-
-    # Constants for velocity adjustment
+    
     MAX_VELOCITY = 1.0
     MIN_VELOCITY = 0.1
     VELOCITY_REDUCTION_FACTOR = 0.001
-    distance = 0
+    print(ttp_solver.items)
 
-    for i in range(1):  # Loop through all city transitions
-        current_city = route[i]
-        next_city = route[i + 1]
+    print(f'picking plan: {picking_plan}')
 
-        # Process items in the current city
-        city_value = 0
-        for item_idx in range(len(picking_plan)):
-            if picking_plan[item_idx] == 1:
-                # print(f'item index: {item_idx}')
-                weight, value = ttp_solver.items[item_idx]
-                if current_weight + weight <= ttp_solver.capacity:
-                    current_weight += weight
-                    city_value += value
-                    total_value += value
-                    # print(f'updated city value: {current_weight} and item index: {item_idx}')
-                else:
-                    return 0,0
+    # Process items in picking plan
+    for item_idx in range(len(picking_plan)):
+        if picking_plan[item_idx] == 1:
+            weight, value = ttp_solver.items[route[item_idx]]
+            # print(f'checked at {route[item_idx]}')
+            print(f'at index {item_idx} weight is {weight} and value is {value}')
+            if current_weight + weight <= ttp_solver.capacity:
+                current_weight += weight
+                total_value += value
 
-        # Adjust velocity based on current weight
-        velocity = max(MIN_VELOCITY, MAX_VELOCITY - (current_weight * VELOCITY_REDUCTION_FACTOR))
-        # print(f" Current City {current_city} next city {next_city}")
-        # print("Before Distance ", distance)
-
-        # Calculate distance and time for this segment
-        distance = distance + ttp_solver.calculate_distance(
-            ttp_solver.cities[current_city],
-            ttp_solver.cities[next_city]
-        )
-        # print(f"After Distance: {distance}")
-        time = distance / velocity
-        total_time += time
-
-    # Final segment: returning to the start city
-    last_city = route[-1]
-    first_city = route[0]
-    distance = ttp_solver.calculate_distance(
-        ttp_solver.cities[last_city],
-        ttp_solver.cities[first_city]
-    )
+    # Calculate time based on current weight and given distance
     velocity = max(MIN_VELOCITY, MAX_VELOCITY - (current_weight * VELOCITY_REDUCTION_FACTOR))
-    time = distance / velocity
-    total_time += time
+    total_time = distance / velocity
 
-    # print(f"total profit {total_value}")
-    # print(f"total time {total_time}")
-    # print(f"current weight {current_weight}")
-
-    # Calculate rental cost based on total time
+    # Calculate rental cost
     # rental_cost = ttp_solver.renting_ratio * total_time
-    # print(f"rental cost {rental_cost}")
-
+    
+    # print(f'rental cost was {rental_cost} and profit was {total_value}')
     # Calculate total profit (value - rental cost)
     # total_profit = total_value - rental_cost
     total_profit = total_value
 
-    # Penalize solutions exceeding capacity
-    # if current_weight > ttp_solver.capacity:
-    #     weight_penalty = (current_weight - ttp_solver.capacity) 
-    #     total_profit -= weight_penalty
+    # Apply weight penalty if capacity exceeded
+    if current_weight > ttp_solver.capacity:
+        weight_penalty = (current_weight - ttp_solver.capacity)  # Adjust penalty factor as needed
+        total_profit -= weight_penalty
 
-    # Return fitness score and current weight
-    # print("-------------------")
     return max(0, round(total_profit, 2)), current_weight
