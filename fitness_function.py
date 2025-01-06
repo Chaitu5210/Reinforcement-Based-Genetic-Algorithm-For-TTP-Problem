@@ -3,7 +3,7 @@ from ttp_solver import TTPSolver
 
 def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSolver', distance: float) -> float:
     route, picking_plan = solution
-    print(f'route: {route}')
+    # print(f'route: {route}')
 
     total_value = 0
     current_weight = 0
@@ -11,16 +11,14 @@ def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSol
     MAX_VELOCITY = 1.0
     MIN_VELOCITY = 0.1
     VELOCITY_REDUCTION_FACTOR = 0.001
-    print(ttp_solver.items)
 
-    print(f'picking plan: {picking_plan}')
 
     # Process items in picking plan
     for item_idx in range(len(picking_plan)):
         if picking_plan[item_idx] == 1:
             weight, value = ttp_solver.items[route[item_idx]]
             # print(f'checked at {route[item_idx]}')
-            print(f'at index {item_idx} weight is {weight} and value is {value}')
+            # print(f'at index {item_idx} weight is {weight} and value is {value}')
             if current_weight + weight <= ttp_solver.capacity:
                 current_weight += weight
                 total_value += value

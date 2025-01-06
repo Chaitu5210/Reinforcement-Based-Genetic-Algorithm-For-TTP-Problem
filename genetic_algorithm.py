@@ -14,46 +14,43 @@ class GeneticAlgorithm:
         population = []
         for _ in range(self.population_size):
             route = generate_route(num_cities)
-            # print(route)
             distance = calculate_total_distance(route,num_cities)
-            # print(distance)
-            # random.shuffle(route)
             picking_plan = [random.randint(0, 1) for _ in range(num_items)]
             population.append((route, picking_plan))
         return population, distance
+    
+    def random_population_generator(self, num_cities, required_population ,num_items: int) -> List[Tuple[List[int], List[int]]]:
 
-    def select_parents(self, population, fitness_scores):
-        """Select parents using a tournament selection."""
-        parents = []
-        for _ in range(self.population_size):
-            # Select two random individuals
-            ind1, ind2 = random.sample(range(self.population_size), 2)
-            # Choose the one with the better fitness
-            if fitness_scores[ind1] > fitness_scores[ind2]:
-                parents.append(population[ind1])
-            else:
-                parents.append(population[ind2])
+        population = []
+        route = generate_route(num_cities)
+
+        for _ in range(required_population):
+            picking_plan = [random.randint(0, 1) for _ in range(num_items)]
+            population.append((route, picking_plan))
+        return population
+    
+
+
+    # Using tournament selection
+    def select_parents(self, population, fitness_scores, tournement_size=2) -> List[Tuple[List[int], List[int]]]:
+
+        top_two_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i], reverse=True)[:tournement_size]
+        parents = [population[i] for i in top_two_indices]
         return parents
 
+    # Using uniform crossover for only the items as route is already optimized
     def crossover(self, parent1: Tuple[List[int], List[int]], 
-                 parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
+              parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route1, items1 = parent1
         route2, items2 = parent2
-        
-        # Order Crossover for route
-        point1, point2 = sorted(random.sample(range(len(route1)), 2))
-        child_route = [-1] * len(route1)
-        child_route[point1:point2] = route1[point1:point2]
-        
-        remaining = [x for x in route2 if x not in child_route[point1:point2]]
-        child_route[:point1] = remaining[:point1]
-        child_route[point2:] = remaining[point1:]
 
-        # Items crossover (1-point crossover)
+        child_route = route1 
+
         child_items = [items1[i] if random.random() < 0.5 else items2[i] 
-                       for i in range(len(items1))]
+                    for i in range(len(items1))]
         
         return child_route, child_items
+
 
     def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route, items = solution
@@ -63,9 +60,8 @@ class GeneticAlgorithm:
             i, j = random.sample(range(len(route)), 2)
             route[i], route[j] = route[j], route[i]
         
-        # Random mutation for items
         for i in range(len(items)):
             if random.random() < self.mutation_rate:
-                items[i] = 1 - items[i]  # Flip between 0 and 1
+                items[i] = 1 - items[i]
                 
         return route, items

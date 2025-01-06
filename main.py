@@ -10,6 +10,8 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     benchmark_data = read_benchmark_file(filename)
     num_items = benchmark_data.get('items')
 
+    pareto_front = []
+
     items = generate_items(f'{filename}')
 
     ttp_solver = TTPSolver(
@@ -20,7 +22,6 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         max_speed=benchmark_data['max_speed'],
         renting_ratio=benchmark_data['renting_ratio']
     )
-
 
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
     population, distance = ga.initialize_population(benchmark_data['cities'], len(items))
@@ -37,7 +38,9 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
 
     for generation in range(ga.generations):
         scores = [calculate_fitness(solution, ttp_solver, distance) for solution in population]
+        pareto_front.append(scores)
         fitness, weight = zip(*scores)
+        
         # Convert to lists if necessary
         fitness_scores = list(fitness)
         weights = list(weight)
@@ -73,13 +76,28 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
             new_population.append(child)
 
         # Fill the remaining slots in the new population with parents if needed
-        while len(new_population) < ga.population_size:
-            new_population.append(random.choice(parents))
+        required_population = ga.population_size - len(new_population)
+        random_population = ga.random_population_generator(benchmark_data['cities'], required_population, len(items))
+        random_population.append(new_population[0])
+        population = random_population
 
-        population = new_population
+    pareto_front_plot(pareto_front)
 
     return best_fitness_history, best_overall_fitness, best_solution, max(all_weights)
 
+def pareto_front_plot(pareto_front, title="Pareto Front"):
+    plt.figure(figsize=(8, 6))
+    for generation_index, generation in enumerate(pareto_front):
+        weights, profits = zip(*generation)
+        # plt.scatter(weights, profits, label=f'Generation {generation_index + 1}', marker='o')
+        plt.scatter(weights, profits, marker='o')
+
+    plt.xlabel('Weight')
+    plt.ylabel('Profit')
+    plt.title(title)
+    plt.grid(True)
+    plt.legend()
+    plt.show()
 
 def main():
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
@@ -122,19 +140,19 @@ def main():
 
             print(f'Final weight for iteration {run + 1} is {max_weight}')
 
-            # # Plot comparison for this run
-            # plt.figure(figsize=(12, 6))
-            # for idx, result in enumerate(run_results):
-            #     plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
-            #     print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
+            # Plot comparison for this run
+            plt.figure(figsize=(12, 6))
+            for idx, result in enumerate(run_results):
+                plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+                print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
 
-            # plt.xlabel('Generation')
-            # plt.ylabel('Best Fitness')
-            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-            # plt.legend()
-            # plt.grid(True)
-            # plt.savefig(f'ga_comparison_run_{run+1}.png')
-            # plt.show()
+            plt.xlabel('Generation')
+            plt.ylabel('Best Fitness')
+            plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            plt.legend()
+            plt.grid(True)
+            plt.savefig(f'ga_comparison_run_{run+1}.png')
+            plt.show()
 
             final_results.append(best_fitness)
 
