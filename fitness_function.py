@@ -3,7 +3,6 @@ from ttp_solver import TTPSolver
 
 def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSolver', distance: float) -> float:
     route, picking_plan = solution
-    # print(f'route: {route}')
 
     total_value = 0
     current_weight = 0
@@ -22,6 +21,8 @@ def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSol
             if current_weight + weight <= ttp_solver.capacity:
                 current_weight += weight
                 total_value += value
+            else:
+                print(f'capacity exceeded at {route[item_idx]}')
 
     # Calculate time based on current weight and given distance
     velocity = max(MIN_VELOCITY, MAX_VELOCITY - (current_weight * VELOCITY_REDUCTION_FACTOR))

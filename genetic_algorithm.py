@@ -2,7 +2,24 @@ import random
 import numpy as np
 from typing import List, Tuple
 from route_generator import generate_route, calculate_total_distance
-import ttp_solver
+from ttp_solver import TTPSolver
+
+
+def check_weight_status(picking_plan: List[int], items, ttp_solver: 'TTPSolver', route):
+        weights = [item[0] for item in items]
+        weights = [weights[i] for i in route]
+
+        total_weight = sum([weights[i] for i in range(len(picking_plan)) if picking_plan[i] == 1])
+        if total_weight > ttp_solver.capacity:
+            selected_indices = [i for i in range(len(picking_plan)) if picking_plan[i] == 1]
+            sorted_indices = sorted(selected_indices, key=lambda x: weights[x], reverse=True)
+            for idx in sorted_indices:
+                if total_weight <= ttp_solver.capacity:
+                    break
+                picking_plan[idx] = 0
+                total_weight -= weights[idx]
+        return picking_plan, total_weight
+
 
 class GeneticAlgorithm:
 
@@ -12,32 +29,31 @@ class GeneticAlgorithm:
         self.generations = generations
 
 
-    def initialize_population(self, num_cities, num_items: int, items) -> List[Tuple[List[int], List[int]]]:
-        # print(f'ttp solver has the following items {items}')
+    def initialize_population(self, num_cities, num_items: int, items, ttp_solver) -> List[Tuple[List[int], List[int]]]:
         population = []
+        route = generate_route(num_cities)
+        distance = calculate_total_distance(route,num_cities)
         for _ in range(self.population_size):
-            route = generate_route(num_cities)
-            distance = calculate_total_distance(route,num_cities)
             picking_plan = [random.randint(0, 1) for _ in range(num_items)]
-            # check_weight_status(picking_plan)
-            population.append((route, picking_plan))
+            final_picking_plan, weight = check_weight_status(picking_plan, items, ttp_solver, route)
+            # print("picking plan outside: ", final_picking_plan)
+            # print(f'after weight: {weight}')
+            population.append((route, final_picking_plan))
+        # print("complete picking plan: ", population)
         return population, distance
     
-    # def check_weight_status(self, picking_plan: List[int]):
-    #     weights = [item.weight for item in items]
-    #     weight = sum([weights[i] for i in range(len(picking_plan)) if picking_plan[i] == 1])
-    #     return
 
     
-    def random_population_generator(self, num_cities, required_population ,num_items: int) -> List[Tuple[List[int], List[int]]]:
+    def random_population_generator(self, num_cities, required_population ,num_items: int, items, ttp_solver) -> List[Tuple[List[int], List[int]]]:
         population = []
         route = generate_route(num_cities)
         for _ in range(required_population):
             picking_plan = [random.randint(0, 1) for _ in range(num_items)]
-            population.append((route, picking_plan))
+            # print("picking plan before: ", picking_plan)
+            final_picking_plan, weight = check_weight_status(picking_plan, items, ttp_solver, route)
+            population.append((route, final_picking_plan))
         return population
     
-
 
     # Using tournament selection
     def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:

@@ -5,6 +5,7 @@ from genetic_algorithm import GeneticAlgorithm
 from fitness_function import calculate_fitness
 from ttp_benchmark_solver import read_benchmark_file, generate_items
 import matplotlib.pyplot as plt 
+from genetic_algorithm import check_weight_status
 
 def run_genetic_algorithm(name: str, filename: str, population_size: int, mutation_rate: float, generations: int):
     benchmark_data = read_benchmark_file(filename)
@@ -24,7 +25,9 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     )
 
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
-    population, distance = ga.initialize_population(benchmark_data['cities'], len(items),items)
+    population, distance = ga.initialize_population(benchmark_data['cities'], len(items),items, ttp_solver)
+
+    # print(f'final population  was {population}')
     
     best_fitness_history = []
     best_solution = None
@@ -66,18 +69,20 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
 
         # Select parents based on fitness
         parents = ga.select_parents(population, fitness_scores)
-
         new_population = []
         for i in range(0, len(parents), 2):  # Process in pairs
             parent1 = parents[i]
             parent2 = parents[i + 1] if i + 1 < len(parents) else parents[0]
             child = ga.crossover(parent1, parent2)
             child = ga.mutate(child)
-            new_population.append(child)
+            route = child[0]
+            final_child, weight = check_weight_status(child[1], items, ttp_solver, route)
+            temp_final_child = (route, final_child)
+            new_population.append(temp_final_child)
 
         # Fill the remaining slots in the new population with parents if needed
         required_population = ga.population_size - len(new_population)
-        random_population = ga.random_population_generator(benchmark_data['cities'], required_population, len(items))
+        random_population = ga.random_population_generator(benchmark_data['cities'], required_population, len(items), items, ttp_solver)
         random_population.append(new_population[0])
         population = random_population
 
