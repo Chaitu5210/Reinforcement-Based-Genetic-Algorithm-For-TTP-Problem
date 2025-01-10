@@ -24,7 +24,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     )
 
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
-    population, distance = ga.initialize_population(benchmark_data['cities'], len(items))
+    population, distance = ga.initialize_population(benchmark_data['cities'], len(items),items)
     
     best_fitness_history = []
     best_solution = None
