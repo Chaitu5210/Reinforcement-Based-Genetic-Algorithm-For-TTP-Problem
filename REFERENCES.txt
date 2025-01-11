@@ -1,3 +1,2 @@
 DATSET PAPER - https://www.researchgate.net/publication/261361597_A_Comprehensive_Benchmark_Set_and_Heuristics_for_the_Travelling_Thief_Problem
-
 DATASET WEBSITE - https://cs.adelaide.edu.au/~optlog/CEC2014COMP_InstancesNew/

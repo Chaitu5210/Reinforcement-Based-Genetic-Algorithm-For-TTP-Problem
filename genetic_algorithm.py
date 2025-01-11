@@ -62,16 +62,6 @@ class GeneticAlgorithm:
         return population, distance
     
 
-    def random_population_generator(self, num_cities, required_population ,num_items: int, items, ttp_solver) -> List[Tuple[List[int], List[int]]]:
-        population = []
-        route = generate_route(num_cities)
-        for _ in range(required_population):
-            picking_plan = [random.randint(0, 1) for _ in range(num_items)]
-            final_picking_plan, weight = check_weight_status(picking_plan, items, ttp_solver, route)
-            population.append((route, final_picking_plan))
-        return population
-    
-
     # Using tournament selection for picking parent1 from top 10 individuals and parent2 will be selected randomly from remaining population
     def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
         parents = []
@@ -103,4 +93,5 @@ class GeneticAlgorithm:
         for i in range(len(items)):
             if random.random() < self.mutation_rate:
                 items[i] = 1 - items[i]
+        # print("final route",route)
         return route, items

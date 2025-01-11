@@ -21,7 +21,6 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
 
     # Read benchmark data
     benchmark_data = read_benchmark_file(filename)
-    num_items = benchmark_data.get('items')
 
     # Initialize pareto front
     pareto_front = []
@@ -91,8 +90,6 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         parent1 = parents[0]
         parent2 = parents[1]
 
-        new_population = []
-
         # Generate new population using crossover and mutation
         child = ga.crossover(parent1, parent2)
         child = ga.mutate(child)
@@ -101,13 +98,12 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         # Check weight status and add to new population
         final_child, weight = check_weight_status(child[1], items, ttp_solver, route)
         temp_final_child = (route, final_child)
-        new_population.append(temp_final_child)
 
-        # Fill the remaining slots in the new population with parents if needed
-        required_population = ga.population_size - len(new_population)
-        random_population = ga.random_population_generator(benchmark_data['cities'], required_population, len(items), items, ttp_solver)
-        random_population.append(new_population[0])
-        population = random_population
+        # Identify the index of the instance with the lowest fitness in the population
+        min_fitness_index = fitness_scores.index(min(fitness_scores))
+
+        # Replace the instance with the lowest fitness with the newly created child
+        population[min_fitness_index] = temp_final_child
 
     pareto_front_plot(pareto_front)
 
@@ -129,8 +125,6 @@ def pareto_front_plot(pareto_front, title="Pareto Front"):
     plt.show()
 
 
-
-    
 # Main function to run the Genetic Algorithm
 def main():
 
