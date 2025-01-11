@@ -1,7 +1,13 @@
+# Description: This file contains the functions to read the benchmark files and generate the items for the TTP problem.
+'''File Contains:
+    1. read_benchmark_file function: This function is used to read the benchmark file and extract the required data.
+    2. generate_items function: This function is used to generate the items from the given file.'''
 
+# Importing required libraries
 import random
 from typing import List,Tuple
 
+# read_benchmark_file function is used to read the benchmark file and extract the required data
 def read_benchmark_file(filename: str):
     cities = []
     dimension = 0
@@ -10,6 +16,7 @@ def read_benchmark_file(filename: str):
     max_speed = 0.0
     renting_ratio = 0.0
     
+    # Read the file line by line
     with open(filename, 'r') as f:
         lines = f.readlines()
         
@@ -33,6 +40,7 @@ def read_benchmark_file(filename: str):
                     _, x, y = map(int, parts)
                     cities.append((x, y))
     
+    # Return the extracted data
     return {
         'dimension': dimension,
         'items': items,
@@ -44,7 +52,7 @@ def read_benchmark_file(filename: str):
     }
 
 
-
+# generate_items function is used to generate the items from the given file
 def generate_items(filename: str) -> List[Tuple[int, float, float, int]]:
     items = []
     with open(filename, 'r') as f:
@@ -56,10 +64,10 @@ def generate_items(filename: str) -> List[Tuple[int, float, float, int]]:
         line = line.strip()
         if line.startswith('ITEMS SECTION'):
             in_items_section = True
-            continue  # Skip the 'ITEMS SECTION' line itself
+            continue 
 
         if in_items_section:
-            if not line:  # Exit if the section ends (empty line)
+            if not line:
                 break
             
             parts = line.split()

@@ -1,3 +1,12 @@
+# Description: Main file to run the Genetic Algorithm for the TTP problem
+
+'''File Contains:
+    1. run_genetic_algorithm function: This function is used to run the Genetic Algorithm for the given benchmark file.
+    2. pareto_front_plot function: This function is used to plot the Pareto Front for the given data.
+    3. main function: This function is used to parse command line arguments and run the Genetic Algorithm.'''
+
+
+# Importing required libraries
 import argparse
 from ttp_solver import TTPSolver
 from genetic_algorithm import GeneticAlgorithm
