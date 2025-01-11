@@ -1,2 +1,2 @@
 Iteration	Best Fitness	Max Weight
-1	3012.0	4012.0
+1	3379.0	4029.0

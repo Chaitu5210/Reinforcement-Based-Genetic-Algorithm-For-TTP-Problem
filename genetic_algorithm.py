@@ -88,10 +88,8 @@ class GeneticAlgorithm:
     def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route, items = solution
         if random.random() < self.mutation_rate:
-            i, j = random.sample(range(len(route)), 2)
-            route[i], route[j] = route[j], route[i]
+            pass
         for i in range(len(items)):
             if random.random() < self.mutation_rate:
                 items[i] = 1 - items[i]
-        # print("final route",route)
         return route, items
