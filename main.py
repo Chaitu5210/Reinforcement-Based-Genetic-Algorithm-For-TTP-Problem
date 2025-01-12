@@ -135,6 +135,7 @@ def main():
     parser.add_argument('--mutation', type=float, default=0.05, help='Mutation rate')
     parser.add_argument('--generations', type=int, default=2000, help='Number of generations')
     parser.add_argument('--itrations', type=int, default=1, help='Number of iterations')
+    
 
     args = parser.parse_args()
 
