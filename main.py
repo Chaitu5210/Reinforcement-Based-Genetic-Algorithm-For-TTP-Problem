@@ -37,6 +37,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         renting_ratio=benchmark_data['renting_ratio']
     )
 
+
     # Initialize Genetic Algorithm
     ga = GeneticAlgorithm(population_size, mutation_rate, generations)
 
@@ -94,7 +95,6 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         child = ga.crossover(parent1, parent2)
         child = ga.mutate(child)
         route = child[0]
-
         # Check weight status and add to new population
         final_child, weight = check_weight_status(child[1], items, ttp_solver, route)
         temp_final_child = (route, final_child)
@@ -105,7 +105,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         # Replace the instance with the lowest fitness with the newly created child
         population[min_fitness_index] = temp_final_child
 
-    pareto_front_plot(pareto_front)
+    # pareto_front_plot(pareto_front)
 
     return best_fitness_history, best_overall_fitness, best_solution, max(all_weights)
 
@@ -130,12 +130,12 @@ def main():
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
+    # parser.add_argument('--files', nargs='+', default=['DATASET/a280_n2790_bounded-strongly-corr_03.ttp'], help='Input benchmark files')
     parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
     parser.add_argument('--population', type=int, default=200, help='Population size')
     parser.add_argument('--mutation', type=float, default=0.05, help='Mutation rate')
     parser.add_argument('--generations', type=int, default=2000, help='Number of generations')
     parser.add_argument('--itrations', type=int, default=1, help='Number of iterations')
-    
 
     args = parser.parse_args()
 
@@ -173,15 +173,15 @@ def main():
             # Plot the results for the run
             plt.figure(figsize=(12, 6))
             for idx, result in enumerate(run_results):
-                plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+                # plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
                 print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
-            plt.xlabel('Generation')
-            plt.ylabel('Best Fitness')
-            plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-            plt.legend()
-            plt.grid(True)
-            plt.savefig(f'ga_comparison_run_{run+1}.png')
-            plt.show()
+            # plt.xlabel('Generation')
+            # plt.ylabel('Best Fitness')
+            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            # plt.legend()
+            # plt.grid(True)
+            # plt.savefig(f'ga_comparison_run_{run+1}.png')
+            # plt.show()
 
 
             # Append the best fitness to the final results
@@ -189,6 +189,8 @@ def main():
 
         # Calculate the average best fitness over all runs
         print("\nFinal Results are:", final_results)
+        print("max value is ",max(final_results))
+
 
 if __name__ == "__main__":
     main()

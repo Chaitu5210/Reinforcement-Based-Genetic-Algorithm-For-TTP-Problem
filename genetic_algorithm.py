@@ -75,14 +75,6 @@ class GeneticAlgorithm:
         return parents
 
 
-
-
-
-
-
-
-
-
     # Mutation operation for both route and items
     def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route, items = solution
@@ -94,77 +86,19 @@ class GeneticAlgorithm:
         return route, items
 
 
-
-
-
-
-
-
-
-    # ----------------------------------------------------------- SINGLE POINT CROSSOVER -----------------------------------------------------
-
-
-    # # Using single-point crossover for items and keeping route static
-    # def crossover(self, parent1: Tuple[List[int], List[int]], 
-    #             parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
-    #     route1, items1 = parent1
-    #     route2, items2 = parent2
-    #     child_route = route1  # Keep the route static
-    #     # Choose a random crossover point for items
-    #     crossover_point = random.randint(1, len(items1) - 1)
-    #     # Perform single-point crossover on the items
-    #     child_items = items1[:crossover_point] + items2[crossover_point:]
-    #     return child_route, child_items
-
-
-    # ----------------------------------------------------------- TWO POINT CROSSOVER -----------------------------------------------------
-
-
-    # def crossover(self, parent1: Tuple[List[int], List[int]], 
-    #             parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
-    #     route1, items1 = parent1
-    #     route2, items2 = parent2
-    #     child_route = route1  
-    #     point1 = random.randint(0, len(items1) - 1)
-    #     point2 = random.randint(0, len(items1) - 1)
-    #     if point1 > point2:
-    #         point1, point2 = point2, point1
-    #     child_items = (
-    #         items1[:point1] +       
-    #         items2[point1:point2] +  
-    #         items1[point2:]          
-    #     )
-    #     return child_route, child_items
-
-
-    # ----------------------------------------------------------- ARITHMETIC CROSSOVER -----------------------------------------------------
-
-
-    # def crossover(self, parent1: Tuple[List[int], List[int]], 
-    #             parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
-    #     route1, items1 = parent1
-    #     route2, items2 = parent2
-    #     child_route = route1  # Keep the route static
-
-    #     # Random weight for arithmetic crossover (between 0 and 1)
-    #     alpha = random.uniform(0, 1)
-
-    #     # Perform arithmetic crossover for items
-    #     child_items = [
-    #         round(alpha * items1[i] + (1 - alpha) * items2[i]) 
-    #         for i in range(len(items1))
-    #     ]
-
-    #     return child_route, child_items
-    
-
-    # ----------------------------------------------------------- UNIFORM CROSSOVER -----------------------------------------------------
-
+    # Two Point Crossover
     def crossover(self, parent1: Tuple[List[int], List[int]], 
-            parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
+                parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route1, items1 = parent1
         route2, items2 = parent2
-        child_route = route1 
-        child_items = [items1[i] if random.random() < 0.5 else items2[i] 
-                    for i in range(len(items1))]
+        child_route = route1  
+        point1 = random.randint(0, len(items1) - 1)
+        point2 = random.randint(0, len(items1) - 1)
+        if point1 > point2:
+            point1, point2 = point2, point1
+        child_items = (
+            items1[:point1] +       
+            items2[point1:point2] +  
+            items1[point2:]          
+        )
         return child_route, child_items
