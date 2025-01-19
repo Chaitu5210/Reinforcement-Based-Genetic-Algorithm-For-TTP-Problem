@@ -15,6 +15,7 @@ from ttp_benchmark_solver import read_benchmark_file, generate_items
 import matplotlib.pyplot as plt 
 from genetic_algorithm import check_weight_status
 import random
+import time
 
 
 # Runs the Genetic Algorithm for the given benchmark file
@@ -129,6 +130,7 @@ def pareto_front_plot(pareto_front, title="Pareto Front"):
 
 # Main function to run the Genetic Algorithm
 def main():
+    start_time = time.time()
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
@@ -193,6 +195,8 @@ def main():
         # Calculate the average best fitness over all runs
         print("\nFinal Results are:", final_results)
         print("max value is ",max(final_results))
+        end_time = time.time()
+        print(f'total time taken was {end_time-start_time}')
 
 
 if __name__ == "__main__":

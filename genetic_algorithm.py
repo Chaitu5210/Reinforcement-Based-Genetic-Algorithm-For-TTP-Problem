@@ -64,6 +64,8 @@ class GeneticAlgorithm:
     
     
     # truncation_selection
+    import random
+    from typing import List, Tuple
     def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
         def truncation_selection(population, fitness_scores, truncation_size=2):
             sorted_population = sorted(zip(fitness_scores, population), key=lambda x: x[0])
@@ -71,7 +73,8 @@ class GeneticAlgorithm:
             return selected_parents 
         parents = truncation_selection(population, fitness_scores)
         return parents
-    
+
+
 
     def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route, items = solution
