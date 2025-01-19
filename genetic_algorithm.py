@@ -47,6 +47,7 @@ class GeneticAlgorithm:
         self.mutation_rate = mutation_rate
         self.generations = generations
 
+
     # Initialize the population with random picking plans and routes
     def initialize_population(self, num_cities, num_items: int, items, ttp_solver) -> List[Tuple[List[int], List[int]]]:
         population = []
@@ -73,6 +74,7 @@ class GeneticAlgorithm:
         parents.append(parent1)
         parents.append(parent2)
         return parents
+    
 
     def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route, items = solution

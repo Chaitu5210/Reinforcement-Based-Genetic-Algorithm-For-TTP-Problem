@@ -1,0 +1,92 @@
+# Using tournament selection for picking parent1 from top 10 individuals and parent2 will be selected randomly from remaining population
+def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
+        parents = []
+        top_10_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i], reverse=True)[:10]
+        top_10_parents = [population[i] for i in top_10_indices]
+        parent1 = random.choice(top_10_parents)
+        remaining_population = [individual for i, individual in enumerate(population) if individual != parent1]
+        parent2 = random.choice(remaining_population)
+        parents.append(parent1)
+        parents.append(parent2)
+        return parents
+
+
+# roulette_wheel_selection
+import random
+from typing import List, Tuple
+def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
+        def roulette_wheel_selection(population, fitness_scores):
+            total_fitness = sum(fitness_scores)
+            selection_probs = [fitness / total_fitness for fitness in fitness_scores]
+            selected_index = random.choices(range(len(population)), weights=selection_probs, k=1)[0]
+            return population[selected_index]
+        parent1 = roulette_wheel_selection(population, fitness_scores)
+        parent2 = roulette_wheel_selection(population, fitness_scores)
+        return [parent1,parent2]
+
+
+
+# tournament_selection
+import random
+from typing import List, Tuple
+def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
+        def tournament_selection(population, fitness_scores, tournament_size=3):
+            tournament_indices = random.sample(range(len(population)), tournament_size)
+            tournament_fitness = [fitness_scores[i] for i in tournament_indices]
+            best_index = tournament_indices[tournament_fitness.index(min(tournament_fitness))]
+            return population[best_index]
+        parent1 = tournament_selection(population, fitness_scores)
+        parent2 = tournament_selection(population, fitness_scores)
+        return [parent1,parent2]
+
+
+
+# Favoring individuals with better fitness, but allows for diversity in the selection process by not selecting only the fittest individuals.
+import random
+from typing import List, Tuple
+def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
+    def rank_selection(population, fitness_scores):
+        sorted_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i])
+        ranked_population = [population[i] for i in sorted_indices]
+        rank_probs = [1 / (rank + 1) for rank in range(len(ranked_population))]
+        total_rank_prob = sum(rank_probs)
+        normalized_probs = [rank_prob / total_rank_prob for rank_prob in rank_probs]
+        selected_index = random.choices(range(len(ranked_population)), weights=normalized_probs, k=1)[0]
+        return ranked_population[selected_index]
+    parent1 = rank_selection(population, fitness_scores)
+    parent2 = rank_selection(population, fitness_scores)
+    return [parent1, parent2]
+
+
+# stochastic_universal_sampling 
+import random
+from typing import List, Tuple
+def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
+    def stochastic_universal_sampling(population, fitness_scores, num_parents=2):
+        total_fitness = sum(fitness_scores)
+        distance = total_fitness / num_parents
+        start_point = random.uniform(0, distance)
+        pointers = [start_point + i * distance for i in range(num_parents)]
+        selected_parents = []
+        for pointer in pointers:
+            current_sum = 0
+            for i, fitness in enumerate(fitness_scores):
+                current_sum += fitness
+                if current_sum >= pointer:
+                    selected_parents.append(population[i])
+                    break
+        return selected_parents
+    parents = stochastic_universal_sampling(population, fitness_scores)
+    return parents
+
+
+# truncation_selection
+import random
+from typing import List, Tuple
+def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
+    def truncation_selection(population, fitness_scores, truncation_size=2):
+        sorted_population = sorted(zip(fitness_scores, population), key=lambda x: x[0])
+        selected_parents = [individual for _, individual in sorted_population[:truncation_size]]
+        return selected_parents 
+    parents = truncation_selection(population, fitness_scores)
+    return parents
