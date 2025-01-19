@@ -1,0 +1,7 @@
+def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
+        route, items = solution
+        # Mutate only the items
+        for i in range(len(items)):
+            if random.random() < self.mutation_rate:
+                items[i] = 1 - items[i]  # Flip the bit (0 -> 1, 1 -> 0)
+        return route, items

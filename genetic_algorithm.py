@@ -74,12 +74,8 @@ class GeneticAlgorithm:
         parents.append(parent2)
         return parents
 
-
-    # Mutation operation for both route and items
     def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
         route, items = solution
-        if random.random() < self.mutation_rate:
-            pass
         for i in range(len(items)):
             if random.random() < self.mutation_rate:
                 items[i] = 1 - items[i]

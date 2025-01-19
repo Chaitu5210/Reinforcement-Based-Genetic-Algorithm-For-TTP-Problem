@@ -14,6 +14,7 @@ from fitness_function import calculate_fitness
 from ttp_benchmark_solver import read_benchmark_file, generate_items
 import matplotlib.pyplot as plt 
 from genetic_algorithm import check_weight_status
+import random
 
 
 # Runs the Genetic Algorithm for the given benchmark file
@@ -100,10 +101,11 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         temp_final_child = (route, final_child)
 
         # Identify the index of the instance with the lowest fitness in the population
-        min_fitness_index = fitness_scores.index(min(fitness_scores))
-
-        # Replace the instance with the lowest fitness with the newly created child
-        population[min_fitness_index] = temp_final_child
+        # Strategy 2: Replace a randomly selected individual from the bottom 20% of the population
+        bottom_20_percent = int(len(fitness_scores) * 0.2)
+        bottom_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i])[:bottom_20_percent]
+        random_index = random.choice(bottom_indices)
+        population[random_index] = temp_final_child
 
     # pareto_front_plot(pareto_front)
 
