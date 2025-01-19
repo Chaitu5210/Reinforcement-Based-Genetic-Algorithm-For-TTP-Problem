@@ -133,7 +133,8 @@ def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
     # parser.add_argument('--files', nargs='+', default=['DATASET/a280_n2790_bounded-strongly-corr_03.ttp'], help='Input benchmark files')
-    parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
+    parser.add_argument('--files', nargs='+', default=['DATASET/eil76.txt'], help='Input benchmark files')
+    # parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
     parser.add_argument('--population', type=int, default=200, help='Population size')
     parser.add_argument('--mutation', type=float, default=0.05, help='Mutation rate')
     parser.add_argument('--generations', type=int, default=2000, help='Number of generations')
