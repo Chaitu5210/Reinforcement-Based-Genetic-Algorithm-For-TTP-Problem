@@ -133,8 +133,8 @@ def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
     # parser.add_argument('--files', nargs='+', default=['DATASET/a280_n2790_bounded-strongly-corr_03.ttp'], help='Input benchmark files')
-    parser.add_argument('--files', nargs='+', default=['DATASET/eil76.txt'], help='Input benchmark files')
-    # parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
+    # parser.add_argument('--files', nargs='+', default=['DATASET/eil76.txt'], help='Input benchmark files')
+    parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
     parser.add_argument('--population', type=int, default=200, help='Population size')
     parser.add_argument('--mutation', type=float, default=0.05, help='Mutation rate')
     parser.add_argument('--generations', type=int, default=2000, help='Number of generations')
@@ -176,15 +176,15 @@ def main():
             # Plot the results for the run
             plt.figure(figsize=(12, 6))
             for idx, result in enumerate(run_results):
-                # plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+                plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
                 print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
-            # plt.xlabel('Generation')
-            # plt.ylabel('Best Fitness')
-            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-            # plt.legend()
-            # plt.grid(True)
-            # plt.savefig(f'ga_comparison_run_{run+1}.png')
-            # plt.show()
+            plt.xlabel('Generation')
+            plt.ylabel('Best Fitness')
+            plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            plt.legend()
+            plt.grid(True)
+            plt.savefig(f'ga_comparison_run_{run+1}.png')
+            plt.show()
 
 
             # Append the best fitness to the final results

@@ -62,17 +62,14 @@ class GeneticAlgorithm:
 
         return population, distance
     
-
-    # Using tournament selection for picking parent1 from top 10 individuals and parent2 will be selected randomly from remaining population
+    
+    # truncation_selection
     def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
-        parents = []
-        top_10_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i], reverse=True)[:10]
-        top_10_parents = [population[i] for i in top_10_indices]
-        parent1 = random.choice(top_10_parents)
-        remaining_population = [individual for i, individual in enumerate(population) if individual != parent1]
-        parent2 = random.choice(remaining_population)
-        parents.append(parent1)
-        parents.append(parent2)
+        def truncation_selection(population, fitness_scores, truncation_size=2):
+            sorted_population = sorted(zip(fitness_scores, population), key=lambda x: x[0])
+            selected_parents = [individual for _, individual in sorted_population[:truncation_size]]
+            return selected_parents 
+        parents = truncation_selection(population, fitness_scores)
         return parents
     
 
