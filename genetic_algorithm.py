@@ -17,6 +17,7 @@ import random
 from typing import List, Tuple
 from route_generator import generate_route, calculate_total_distance
 from ttp_solver import TTPSolver
+from crossover import CrossoverMethods
 
 # check_weight_status function is used to check if the weight exceeds the capacity and if it does, it removes the items with the highest weight
 def check_weight_status(picking_plan: List[int], items, ttp_solver: 'TTPSolver', route):
@@ -99,4 +100,5 @@ class GeneticAlgorithm:
             items2[point1:point2] +  
             items1[point2:]          
         )
+
         return child_route, child_items

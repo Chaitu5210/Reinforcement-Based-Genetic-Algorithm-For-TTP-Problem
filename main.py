@@ -178,15 +178,15 @@ def main():
             # Plot the results for the run
             plt.figure(figsize=(12, 6))
             for idx, result in enumerate(run_results):
-                plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+                # plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
                 print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
-            plt.xlabel('Generation')
-            plt.ylabel('Best Fitness')
-            plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-            plt.legend()
-            plt.grid(True)
-            plt.savefig(f'ga_comparison_run_{run+1}.png')
-            plt.show()
+            # plt.xlabel('Generation')
+            # plt.ylabel('Best Fitness')
+            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            # plt.legend()
+            # plt.grid(True)
+            # plt.savefig(f'ga_comparison_run_{run+1}.png')
+            # plt.show()
 
 
             # Append the best fitness to the final results

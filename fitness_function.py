@@ -16,9 +16,11 @@ def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSol
     # Initialize variables
     total_value = 0
     current_weight = 0
-    MAX_VELOCITY = 1.0
-    MIN_VELOCITY = 0.1
+    MAX_VELOCITY = ttp_solver.max_speed
+    MIN_VELOCITY = ttp_solver.min_speed
     VELOCITY_REDUCTION_FACTOR = 0.001
+    renting_cost = ttp_solver.renting_ratio
+
 
 
     # Process items in picking plan
@@ -35,7 +37,7 @@ def calculate_fitness(solution: Tuple[List[int], List[int]], ttp_solver: 'TTPSol
     velocity = max(MIN_VELOCITY, MAX_VELOCITY - (current_weight * VELOCITY_REDUCTION_FACTOR))
     
     
-    # total_time = distance / velocity
+    total_time = distance / velocity
     # Calculate rental cost
     # rental_cost = ttp_solver.renting_ratio * total_time
     
