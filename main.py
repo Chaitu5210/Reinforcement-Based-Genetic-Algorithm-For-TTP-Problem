@@ -77,7 +77,7 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
             best_solution = population[fitness_scores.index(best_fitness)]
 
         # Check if the algorithm has converged
-        if generation >= 500 and all(x == best_fitness_history[generation - 500] for x in best_fitness_history[generation - 500: generation + 1]):
+        if generation >= 15000 and all(x == best_fitness_history[generation - 500] for x in best_fitness_history[generation - 500: generation + 1]):
             evalution = False
         else:
             evalution = True
@@ -145,7 +145,7 @@ def main():
     parser = argparse.ArgumentParser(description='TTP Solver with Genetic Algorithm')
 
     # # Eil76 (DATASET - 1) (CAT-1)
-    # parser.add_argument('--files', nargs='+', default=['DATASET/eil76.txt'], help='Input benchmark files')
+    parser.add_argument('--files', nargs='+', default=['DATASET/eil76.txt'], help='Input benchmark files')
 
     # # KroA100 (DATASET - 2) (CAT-2)
     # parser.add_argument('--files', nargs='+', default=['DATASET/KroA100.txt'], help='Input benchmark files')
@@ -153,11 +153,11 @@ def main():
     # # ch130 (DATASET - 3) (CAT-3)
     # parser.add_argument('--files', nargs='+', default=['DATASET/ch130.txt'], help='Input benchmark files')
 
-    # # ch130 (DATASET - 4) (CAT-3)
+    # # U159 (DATASET - 4) (CAT-3)
     # parser.add_argument('--files', nargs='+', default=['DATASET/U159.txt'], help='Input benchmark files')
 
     # # A280 (DATASET - 5) (CAT-1)
-    parser.add_argument('--files', nargs='+', default=['DATASET/A280.txt'], help='Input benchmark files')
+    # parser.add_argument('--files', nargs='+', default=['DATASET/A280.txt'], help='Input benchmark files')
 
     
 
@@ -205,14 +205,14 @@ def main():
             # Plot the results for the run
             plt.figure(figsize=(12, 6))
             for idx, result in enumerate(run_results):
-                # plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+                plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
                 print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
-            # plt.xlabel('Generation')
-            # plt.ylabel('Best Fitness')
-            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-            # plt.legend()
+            plt.xlabel('Generation')
+            plt.ylabel('Best Fitness')
+            plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            plt.legend()
             # plt.grid(True)
-            # plt.savefig(f'ga_comparison_run_{run+1}.png')
+            plt.savefig(f'ga_comparison_run_{run+1}.png')
             # plt.show()
 
 

@@ -80,7 +80,7 @@ class GeneticAlgorithm:
     def mutate(self, solution: Tuple[List[int], List[int]], evalution) -> Tuple[List[int], List[int]]:
         mutation_types = MutationTypes(mutation_rate=self.mutation_rate)
         if evalution:
-            mutation_name = "bit_flip_mutation"
+            mutation_name = "scramble_mutation"
         else:
             mutation_name = random.choice(["bit_flip_mutation", "random_item_swap_mutation","scramble_mutation","inversion_mutation","reset_mutation","block_flip_mutation", "gaussian_mutation"])
         mutated_solution = mutation_types.apply_mutation(mutation_name, solution)
