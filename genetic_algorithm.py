@@ -10,8 +10,6 @@
 '''2. check_weight_status function: This function is used to check if the weight exceeds the capacity and 
                                 if it does, it removes the items with the highest weight.'''
 
-
-
 # Importing required libraries
 import random
 from typing import List, Tuple

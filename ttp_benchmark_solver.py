@@ -37,7 +37,7 @@ def read_benchmark_file(filename: str):
             elif line and line[0].isdigit():
                 parts = line.split()
                 if len(parts) == 3:
-                    _, x, y = map(int, parts)
+                    _, x, y = map(float, parts)
                     cities.append((x, y))
     
     # Return the extracted data
