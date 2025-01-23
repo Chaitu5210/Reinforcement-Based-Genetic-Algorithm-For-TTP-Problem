@@ -96,13 +96,13 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         prev_best_fitness = best_fitness
 
         # Select parents based on fitness
-        parents = ga.select_parents(population, fitness_scores)
+        parents = ga.select_parents(population, fitness_scores, evalution)
         parent1 = parents[0]
         parent2 = parents[1]
 
         # Generate new population using crossover and mutation
-        child = ga.crossover(parent1, parent2)
-        child = ga.mutate(child)
+        child = ga.crossover(parent1, parent2, evalution)
+        child = ga.mutate(child, evalution)
         route = child[0]
         # Check weight status and add to new population
         final_child, weight = check_weight_status(child[1], items, ttp_solver, route)
@@ -187,15 +187,15 @@ def main():
             # Plot the results for the run
             plt.figure(figsize=(12, 6))
             for idx, result in enumerate(run_results):
-                plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+                # plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
                 print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
-            plt.xlabel('Generation')
-            plt.ylabel('Best Fitness')
-            plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-            plt.legend()
-            plt.grid(True)
-            plt.savefig(f'ga_comparison_run_{run+1}.png')
-            plt.show()
+            # plt.xlabel('Generation')
+            # plt.ylabel('Best Fitness')
+            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            # plt.legend()
+            # plt.grid(True)
+            # plt.savefig(f'ga_comparison_run_{run+1}.png')
+            # plt.show()
 
 
             # Append the best fitness to the final results
