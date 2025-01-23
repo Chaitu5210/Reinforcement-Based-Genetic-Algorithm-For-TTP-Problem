@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from genetic_algorithm import check_weight_status
 import random
 import time
+from child_to_population import ChildToPopulationTypes
 
 
 # Runs the Genetic Algorithm for the given benchmark file
@@ -75,6 +76,12 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
             best_overall_fitness = best_fitness
             best_solution = population[fitness_scores.index(best_fitness)]
 
+        # Check if the algorithm has converged
+        if generation >= 500 and all(x == best_fitness_history[generation - 500] for x in best_fitness_history[generation - 500: generation + 1]):
+            evalution = False
+        else:
+            evalution = True
+
         print(f"{name} - Generation {generation}: Best Fitness = {best_fitness}")
 
         # Check if the best fitness has improved from the previous generation
@@ -101,12 +108,14 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         final_child, weight = check_weight_status(child[1], items, ttp_solver, route)
         temp_final_child = (route, final_child)
 
-        # Identify the index of the instance with the lowest fitness in the population
-        # Strategy 2: Replace a randomly selected individual from the bottom 20% of the population
-        bottom_20_percent = int(len(fitness_scores) * 0.2)
-        bottom_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i])[:bottom_20_percent]
-        random_index = random.choice(bottom_indices)
-        population[random_index] = temp_final_child
+
+        if evalution:
+            strategy = "replace_bottom_20_percent"
+        else:
+            strategy = random.choice(["replace_bottom_20_percent","replace_lowest_fitness","replace_based_on_fitness_probability"])
+        population_manager = ChildToPopulationTypes(ga)
+        new_population = population_manager.replace(strategy, population, fitness_scores, temp_final_child)
+        population = new_population
 
     # pareto_front_plot(pareto_front)
 
@@ -178,15 +187,15 @@ def main():
             # Plot the results for the run
             plt.figure(figsize=(12, 6))
             for idx, result in enumerate(run_results):
-                # plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
+                plt.plot(result[0], label=f'GA-{idx+1} (Run {run+1})')
                 print(f"\nRun {run+1}, GA-{idx+1} Best Fitness: {result[1]}")
-            # plt.xlabel('Generation')
-            # plt.ylabel('Best Fitness')
-            # plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
-            # plt.legend()
-            # plt.grid(True)
-            # plt.savefig(f'ga_comparison_run_{run+1}.png')
-            # plt.show()
+            plt.xlabel('Generation')
+            plt.ylabel('Best Fitness')
+            plt.title(f'Genetic Algorithm Performance Comparison - Run {run+1}')
+            plt.legend()
+            plt.grid(True)
+            plt.savefig(f'ga_comparison_run_{run+1}.png')
+            plt.show()
 
 
             # Append the best fitness to the final results

@@ -18,6 +18,8 @@ from typing import List, Tuple
 from route_generator import generate_route, calculate_total_distance
 from ttp_solver import TTPSolver
 from crossover import CrossoverMethods
+from mutation import MutationTypes
+from parent_selection import ParentSelectionStrategies
 
 # check_weight_status function is used to check if the weight exceeds the capacity and if it does, it removes the items with the highest weight
 def check_weight_status(picking_plan: List[int], items, ttp_solver: 'TTPSolver', route):
@@ -65,40 +67,27 @@ class GeneticAlgorithm:
     
     
     # truncation_selection
-    import random
-    from typing import List, Tuple
+
     def select_parents(self, population: List[List[int]], fitness_scores: List[float]) -> List[Tuple[List[int], List[int]]]:
-        def truncation_selection(population, fitness_scores, truncation_size=2):
-            sorted_population = sorted(zip(fitness_scores, population), key=lambda x: x[0])
-            selected_parents = [individual for _, individual in sorted_population[:truncation_size]]
-            return selected_parents 
-        parents = truncation_selection(population, fitness_scores)
-        return parents
+        selector = ParentSelectionStrategies()
+        method_name = "truncation_selection"
+        selected_parents = selector.call_method(method_name, population, fitness_scores)
+        return selected_parents
 
 
 
     def mutate(self, solution: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
-        route, items = solution
-        for i in range(len(items)):
-            if random.random() < self.mutation_rate:
-                items[i] = 1 - items[i]
-        return route, items
+        mutation_types = MutationTypes(mutation_rate=self.mutation_rate)
+        mutation_name = "bit_flip_mutation"
+        mutated_solution = mutation_types.apply_mutation(mutation_name, solution)
+        return mutated_solution
 
 
     # Two Point Crossover
     def crossover(self, parent1: Tuple[List[int], List[int]], 
                 parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
-        route1, items1 = parent1
-        route2, items2 = parent2
-        child_route = route1  
-        point1 = random.randint(0, len(items1) - 1)
-        point2 = random.randint(0, len(items1) - 1)
-        if point1 > point2:
-            point1, point2 = point2, point1
-        child_items = (
-            items1[:point1] +       
-            items2[point1:point2] +  
-            items1[point2:]          
-        )
-
-        return child_route, child_items
+        # return child_route, child_items
+        crossover_methods = CrossoverMethods()
+        method_name = "two_point"
+        child = crossover_methods.crossover(method_name, parent1, parent2)
+        return child

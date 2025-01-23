@@ -24,7 +24,6 @@ class CrossoverMethods:
         return child_route, child_items
 
     def two_point_crossover(self, parent1: Tuple[List[int], List[int]], parent2: Tuple[List[int], List[int]]) -> Tuple[List[int], List[int]]:
-        print("here at 2 point crossover")
         route1, items1 = parent1
         route2, items2 = parent2
         child_route = route1  # Keep the route static
@@ -59,10 +58,3 @@ class CrossoverMethods:
             for i in range(len(items1))
         ]
         return child_route, child_items
-
-# Example usage:
-# crossover_methods = CrossoverMethods()
-# parent1 = ([1, 2, 3, 4], [10, 20, 30, 40])
-# parent2 = ([5, 6, 7, 8], [15, 25, 35, 45])
-# result = crossover_methods.crossover("single_point", parent1, parent2)
-# print(result)
