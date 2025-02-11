@@ -66,35 +66,30 @@ class GeneticAlgorithm:
     
     # truncation_selection
 
-    def select_parents(self, population: List[List[int]], fitness_scores: List[float], evalution) -> List[Tuple[List[int], List[int]]]:
+    def select_parents(self, population: List[List[int]], fitness_scores: List[float], evolution ,strategy_index) -> List[Tuple[List[int], List[int]]]:
         selector = ParentSelectionStrategies()
-        if evalution:
-            method_name = "truncation_selection"
-        else:
-            method_name = random.choice(["truncation_selection", "tournament_top_10", "roulette_wheel_selection", "tournament_selection", "rank_selection", "stochastic_universal_sampling"])
+        # strategy = ["truncation_selection", "tournament_top_10", "roulette_wheel_selection", "tournament_selection", "rank_selection", "stochastic_universal_sampling"]
+        strategy = ["truncation_selection", "roulette_wheel_selection", "stochastic_universal_sampling", "tournament_top_10"]
+        method_name = strategy[strategy_index]
         selected_parents = selector.call_method(method_name, population, fitness_scores)
         return selected_parents
 
 
 
-    def mutate(self, solution: Tuple[List[int], List[int]], evalution) -> Tuple[List[int], List[int]]:
+    def mutate(self, solution: Tuple[List[int], List[int]], evolution, strategy_index) -> Tuple[List[int], List[int]]:
         mutation_types = MutationTypes(mutation_rate=self.mutation_rate)
-        if evalution:
-            mutation_name = "scramble_mutation"
-        else:
-            mutation_name = random.choice(["bit_flip_mutation", "random_item_swap_mutation","scramble_mutation","inversion_mutation","reset_mutation","block_flip_mutation", "gaussian_mutation"])
+        # strategy = ["bit_flip_mutation", "random_item_swap_mutation","scramble_mutation","inversion_mutation","reset_mutation","block_flip_mutation", "gaussian_mutation"] 
+        strategy = ["bit_flip_mutation","gaussian_mutation", "inversion_mutation", "scramble_mutation"]
+        mutation_name = strategy[strategy_index]
         mutated_solution = mutation_types.apply_mutation(mutation_name, solution)
         return mutated_solution
 
 
     # Two Point Crossover
-    def crossover(self, parent1: Tuple[List[int], List[int]], 
-                parent2: Tuple[List[int], List[int]], evalution) -> Tuple[List[int], List[int]]:
-        # return child_route, child_items
+    def crossover(self, parent1: Tuple[List[int], List[int]], parent2: Tuple[List[int], List[int]], evolution, strategy_index) -> Tuple[List[int], List[int]]:
         crossover_methods = CrossoverMethods()
-        if evalution:
-            method_name = "two_point"
-        else:
-            method_name = random.choice(["single_point", "two_point", "uniform","arithmetic"])
+        # strategy = ["single_point", "two_point", "uniform","arithmetic"]
+        strategy = ["single_point", "two_point","arithmetic", "uniform"]
+        method_name = strategy[strategy_index]
         child = crossover_methods.crossover(method_name, parent1, parent2)
         return child

@@ -17,10 +17,13 @@ from genetic_algorithm import check_weight_status
 import random
 import time
 from child_to_population import ChildToPopulationTypes
+from Q_learning import QLearning
 
 
 # Runs the Genetic Algorithm for the given benchmark file
 def run_genetic_algorithm(name: str, filename: str, population_size: int, mutation_rate: float, generations: int):
+
+
 
     # Read benchmark data
     benchmark_data = read_benchmark_file(filename)
@@ -57,6 +60,12 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
     # Reset all_weights for each iteration
     all_weights = []
 
+
+    # Initialize Q-Learning(Reinforcement Learning) Algorithm
+    QL = QLearning(learning_rate=0.1, discount_factor=0.95, epsilon=0.1)
+    current_state = (0, 0, 0, 0)
+
+
     # Run the Genetic Algorithm
     for generation in range(ga.generations):
         scores = [calculate_fitness(solution, ttp_solver, distance) for solution in population]
@@ -67,7 +76,6 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         fitness_scores = list(fitness)
         weights = list(weight)
         all_weights.append(max(weights))
-
         best_fitness = max(fitness_scores)
         best_fitness_history.append(best_fitness)
 
@@ -77,10 +85,10 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
             best_solution = population[fitness_scores.index(best_fitness)]
 
         # Check if the algorithm has converged
-        if generation >= 15000 and all(x == best_fitness_history[generation - 500] for x in best_fitness_history[generation - 500: generation + 1]):
-            evalution = False
+        if generation >= 150000 and all(x == best_fitness_history[generation - 500] for x in best_fitness_history[generation - 500: generation + 1]):
+            evolution = False
         else:
-            evalution = True
+            evolution = True
 
         print(f"{name} - Generation {generation}: Best Fitness = {best_fitness}")
 
@@ -95,27 +103,46 @@ def run_genetic_algorithm(name: str, filename: str, population_size: int, mutati
         prev_population = population[:]
         prev_best_fitness = best_fitness
 
+
         # Select parents based on fitness
-        parents = ga.select_parents(population, fitness_scores, evalution)
+        parents = ga.select_parents(population, fitness_scores, evolution, current_state[0])
         parent1 = parents[0]
         parent2 = parents[1]
 
         # Generate new population using crossover and mutation
-        child = ga.crossover(parent1, parent2, evalution)
-        child = ga.mutate(child, evalution)
+        child = ga.crossover(parent1, parent2, evolution, current_state[1])
+        child = ga.mutate(child, evolution, current_state[2])
         route = child[0]
         # Check weight status and add to new population
         final_child, weight = check_weight_status(child[1], items, ttp_solver, route)
         temp_final_child = (route, final_child)
 
 
-        if evalution:
-            strategy = "replace_bottom_20_percent"
-        else:
-            strategy = random.choice(["replace_bottom_20_percent","replace_lowest_fitness","replace_based_on_fitness_probability"])
+
+        diff_strategy = ["replace_bottom_20_percent","replace_lowest_fitness","replace_based_on_fitness_probability", "replace_lowest_fitness"]
+        strategy = diff_strategy[current_state[3]]
         population_manager = ChildToPopulationTypes(ga)
         new_population = population_manager.replace(strategy, population, fitness_scores, temp_final_child)
+
         population = new_population
+
+        if generation == 0:
+            before_fitness = best_fitness
+        else:
+
+            action = QL.choose_action(current_state)
+            next_state = QL.get_next_state(current_state, action)
+
+            # Allocating Reward
+            reward = best_fitness - before_fitness
+            QL.update(current_state, action, reward, next_state)
+
+            current_state = next_state
+            before_fitness = best_fitness
+        
+
+    best_strategies = QL.get_best_strategies()
+    print(f"Best Strategies: {best_strategies}")
 
     # pareto_front_plot(pareto_front)
 
@@ -163,6 +190,7 @@ def main():
 
 
     # # eil 51 is used for testing
+    # these are all the inputs that can be used
     # parser.add_argument('--files', nargs='+', default=['DATASET/eil51_n50_bounded-strongly-corr_01.ttp'], help='Input benchmark files')
     parser.add_argument('--population', type=int, default=200, help='Population size')
     parser.add_argument('--mutation', type=float, default=0.05, help='Mutation rate')
@@ -181,6 +209,7 @@ def main():
             main_weights = []
 
             for idx, file in enumerate(args.files):
+                # from here we will call the genetic algorithm
                 ga_results = run_genetic_algorithm(  
                     f"GA-{idx+1}",
                     file,
@@ -213,7 +242,7 @@ def main():
             plt.legend()
             # plt.grid(True)
             plt.savefig(f'ga_comparison_run_{run+1}.png')
-            # plt.show()
+            plt.show()
 
 
             # Append the best fitness to the final results
